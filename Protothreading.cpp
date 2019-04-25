@@ -1,7 +1,7 @@
 /** Project       : White Board Bot Controller
     ----------------------------------------------------------
     File          : Protothreading.cpp
-    Description   : Module containing useful methods for protothreading.
+    Description   : "Static" class containing useful methods for protothreading.
 */
 
 #include "Arduino.h"
