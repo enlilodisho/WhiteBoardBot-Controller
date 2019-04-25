@@ -4,14 +4,9 @@
 #include "Module.h"
 #include <map>
 
-class Protothreading: public Module {
+class Protothreading {
 
 public:
-  ~Protothreading();
-  
-  bool initialize();
-  void runTasks();
-
   static unsigned int timer(unsigned long ms);
   static unsigned int timerMicroseconds(unsigned long us);
   static bool timerReset(unsigned int id);

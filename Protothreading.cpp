@@ -17,29 +17,7 @@ std::map<unsigned int, std::pair<unsigned long, long long>> Protothreading::time
 /*
  * The next available timer id.
  */
-unsigned int Protothreading::nextAvailableTimerId;
-
-/*
- * Protothreading Destructor
- */
-Protothreading::~Protothreading() {
-  
-}
-
-/*
- * Initialize Protothreading. Call before using static methods.
- */
-bool Protothreading::initialize() {
-  nextAvailableTimerId = 0;
-  return true;
-}
-
-/*
- * Logic loop.
- */
-void Protothreading::runTasks() {
-  
-}
+unsigned int Protothreading::nextAvailableTimerId = 0;
 
 /*
  * Start a timer with miliseconds interval.
