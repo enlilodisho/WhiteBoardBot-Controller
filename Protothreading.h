@@ -25,4 +25,4 @@ private:
 
 };
 
-#endif
+#endif /* PROTOTHREADING_H */

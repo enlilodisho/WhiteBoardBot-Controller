@@ -16,4 +16,4 @@ private:
   
 };
 
-#endif
+#endif /* LEDBLINKER_MODULE_H */

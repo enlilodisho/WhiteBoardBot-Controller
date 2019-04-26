@@ -11,4 +11,4 @@ public:
   virtual void runTasks() = 0;
 };
 
-#endif
+#endif /* MODULE_H */
