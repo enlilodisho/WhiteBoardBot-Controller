@@ -10,6 +10,7 @@ public:
   static unsigned int timer(unsigned long ms);
   static unsigned int timerMicroseconds(unsigned long us);
   static bool timerReset(unsigned int id);
+  static void timerDelete(unsigned int id);
   static bool timerCheckAndDelete(unsigned int id);
   static bool timerCheckAndSave(unsigned int id);
   static void timerChangeIntervalMS(unsigned int id, unsigned long ms);

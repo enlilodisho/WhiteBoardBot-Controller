@@ -52,6 +52,17 @@ bool Protothreading::timerReset(unsigned int id) {
 }
 
 /*
+ * Deletes timer.
+ */
+void Protothreading::timerDelete(unsigned int id) {
+  auto it = timersMap.find(id);
+  if (it == timersMap.end()) {
+    return;
+  }
+  timersMap.erase(it);
+}
+
+/*
  * Returns boolean on whether timer finished.
  * Deletes timer after.
  */

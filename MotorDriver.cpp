@@ -13,6 +13,7 @@
 MotorDriver::MotorDriver(int penable, int preset, int psleep, int pstep, int pdir):
   pinEnable(penable), pinReset(preset), pinSleep(psleep), pinStep(pstep), pinDirection(pdir) {
   stepTimer = -1;
+  stepPinPulledUp = false;
 }
 
 /* Destructor */
@@ -22,9 +23,10 @@ MotorDriver::~MotorDriver() {
 
 /* Initialize Module */
 bool MotorDriver::initialize() {
+  sleep();
   enable();
   pinMode(pinReset, INPUT_PULLUP);
-  sleep();
+  pinMode(pinStep, INPUT_PULLDOWN);
   setDirectionFWD();
   return true;
 }
@@ -34,23 +36,43 @@ bool MotorDriver::initialize() {
  */
 void MotorDriver::runTasks() {
   // Check if stepping.
-  if (stepTimer >= 0 && Protothreading::timerCheckAndDelete(stepTimer)) {
-    pinMode(pinStep, INPUT_PULLDOWN);
-    stepTimer = -1;
+  if (stepTimer >= 0 && Protothreading::timerCheckAndSave(stepTimer)) {
+    if (stepPinPulledUp) {
+      toggleStepPin();
+      Protothreading::timerReset(stepTimer);
+    } else {
+      Protothreading::timerDelete(stepTimer);
+      stepTimer = -1;
+    }
   }
 }
 
 /*
- * Steps motor once.
+ * Steps motor once. Returns whether step signal sent.
  */
-void MotorDriver::motorStep() {
-  if (pinStep >= 0) {
+bool MotorDriver::motorStep() {
+  if (stepTimer >= 0) {
     // Already stepping.
-    return;
+    return false;
   }
   // Send 1ms pulse on pinStep.
   pinMode(pinStep, INPUT_PULLUP);
+  stepPinPulledUp = true;
   stepTimer = Protothreading::timerMicroseconds(1000);
+  return true;
+}
+
+/*
+ * Helper method for motorStep.
+ */
+void MotorDriver::toggleStepPin() {
+  if (stepPinPulledUp) {
+    pinMode(pinStep, INPUT_PULLDOWN);
+    stepPinPulledUp = false;
+  } else {
+    pinMode(pinStep, INPUT_PULLUP);
+    stepPinPulledUp = true;
+  }
 }
 
 /*

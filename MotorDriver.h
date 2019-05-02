@@ -12,7 +12,7 @@ public:
   bool initialize();
   void runTasks();
 
-  void motorStep();
+  bool motorStep();
   void sleep();
   void wake();
   void enable();
@@ -28,6 +28,8 @@ private:
   const int pinDirection;
 
   int stepTimer;
+  bool stepPinPulledUp;
+  void toggleStepPin();
   
 };
 
