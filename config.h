@@ -7,6 +7,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include "LedBlinkerModule.h"
+
 // Uncomment line below to enable Serial debug messages.
 #define DEBUG_MODE
 // Serial Baud Rate
@@ -16,8 +18,10 @@
 // Startup modules are started by the Controller on startup. These modules are
 // highest priority as they are being updated as fast as possible.
 // Also note that adding more startup modules will slow down all other modules.
-#define STARTUP_MODULES { 0, 1, 2 }
 #define NUM_STARTUP_MODULES 1
+LedBlinkerModule * const ledBlinker = new LedBlinkerModule;
+Module * const STARTUP_MODULES[NUM_STARTUP_MODULES] = { ledBlinker };
+
 
 
 #endif /* CONFIG_H */
