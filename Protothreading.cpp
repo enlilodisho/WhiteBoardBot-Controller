@@ -5,7 +5,7 @@
 */
 
 #include "Arduino.h"
-#include "Protothreading.h"
+#include "Protothreading.hpp"
 
 /*
  * Store a hash table of timers.

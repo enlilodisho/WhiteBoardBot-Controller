@@ -4,7 +4,7 @@
     Description   : Abstract class for modules.
 */
 
-#include "Module.h"
+#include "Module.hpp"
 
 // Constructor
 Module::Module() {

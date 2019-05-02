@@ -6,8 +6,8 @@
 // WARNING! DO NOT ADD ANY DELAYS IN THIS FILE.
 // DOING SO COULD BLOCK EXECUTION OR CAUSE MODULE FAILURES.
 
-#include "Controller.h"
-#include "config.h"
+#include "Controller.hpp"
+#include "config.hpp"
 
 void setup() {
   #ifdef DEBUG_MODE

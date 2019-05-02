@@ -7,7 +7,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "LedBlinkerModule.h"
+#include "LedBlinkerModule.hpp"
 
 // Uncomment line below to enable Serial debug messages.
 #define DEBUG_MODE

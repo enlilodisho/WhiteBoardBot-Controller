@@ -5,8 +5,8 @@
 */
 
 #include "Arduino.h"
-#include "LedBlinkerModule.h"
-#include "Protothreading.h"
+#include "LedBlinkerModule.hpp"
+#include "Protothreading.hpp"
 
 // Destructor
 LedBlinkerModule::~LedBlinkerModule() {
