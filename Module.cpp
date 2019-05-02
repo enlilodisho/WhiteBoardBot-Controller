@@ -2,7 +2,6 @@
     ----------------------------------------------------------
     File          : Module.cpp
     Description   : Abstract class for modules.
-      Every object is a module and must inherit from this class.
 */
 
 #include "Module.h"

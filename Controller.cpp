@@ -1,14 +1,13 @@
 /** Project       : White Board Bot Controller
  *  ----------------------------------------------------------
  *  File          : Controller.cpp
- *  Description   : Runs all modules when controller starts up.
+ *  Description   : Runs all startup modules when controller starts up.
  */
 // WARNING! DO NOT ADD ANY DELAYS IN THIS FILE.
 // DOING SO COULD BLOCK EXECUTION OR CAUSE MODULE FAILURES.
 
 #include "Controller.h"
 #include "config.h"
-#include "Module.h"
 
 void setup() {
   #ifdef DEBUG_MODE
