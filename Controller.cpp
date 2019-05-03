@@ -7,22 +7,26 @@
 // DOING SO COULD BLOCK EXECUTION OR CAUSE MODULE FAILURES.
 
 #include "Controller.hpp"
+#include "Protothreading.hpp"
 #include "config.hpp"
 
 void setup() {
-  #ifdef DEBUG_MODE
-    Serial.begin(SERIAL_RATE);
-  #endif /* DEBUG_MODE */
+#ifdef DEBUG_MODE
+	Serial.begin(SERIAL_RATE);
+#endif /* DEBUG_MODE */
 
-  // Initialize all modules.
-  for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
-    STARTUP_MODULES[i]->initialize();
-  }
+	// Initialize all modules.
+	for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
+		STARTUP_MODULES[i]->initialize();
+	}
 }
 
 void loop() {
-  // Run all modules.
-  for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
-    STARTUP_MODULES[i]->runTasks();
-  }
+	// Update paused modules.
+	Protothreading::checkOnPausedModules();
+
+	// Run all modules.
+	for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
+		STARTUP_MODULES[i]->run();
+	}
 }

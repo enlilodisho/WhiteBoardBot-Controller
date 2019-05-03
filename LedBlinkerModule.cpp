@@ -1,8 +1,8 @@
 /** Project       : White Board Bot Controller
-    ----------------------------------------------------------
-    File          : LedBlinkerModule.cpp
-    Description   : Temporarily led blinker module for testing modules.
-*/
+ *  ----------------------------------------------------------
+ *  File          : LedBlinkerModule.cpp
+ *  Description   : Temporarily led blinker module for testing modules.
+ */
 
 #include "Arduino.h"
 #include "LedBlinkerModule.hpp"
@@ -10,22 +10,23 @@
 
 // Destructor
 LedBlinkerModule::~LedBlinkerModule() {
-  
+
 }
 
 bool LedBlinkerModule::initialize() {
-  pinMode(PC13, OUTPUT);
-  timer1 = Protothreading::timer(250);
-  timer2 = Protothreading::timer(250);
-  return true;
+	pinMode(PC13, OUTPUT);
+	ledPinHigh = false;
+	return true;
 }
 
 void LedBlinkerModule::runTasks() {
-  if (Protothreading::timerCheckAndSave(timer1)) {
-    digitalWrite(PC13, LOW);
-    Protothreading::timerReset(timer2);
-  } else if (Protothreading::timerCheckAndSave(timer2)) {
-    digitalWrite(PC13, HIGH);
-    Protothreading::timerReset(timer1);
-  }
+	Protothreading::pause(this, 250, [&]() -> void {
+		if (ledPinHigh) {
+			digitalWrite(PC13, LOW);
+			ledPinHigh = false;
+		} else {
+			digitalWrite(PC13, HIGH);
+			ledPinHigh = true;
+		}
+	});
 }

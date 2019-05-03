@@ -1,28 +1,50 @@
 #ifndef PROTOTHREADING_H
 #define PROTOTHREADING_H
 
-#include "Module.h"
+#include <functional>
 #include <map>
+#include "Module.hpp"
 
 class Protothreading {
 
-public:
-  static unsigned int timer(unsigned long ms);
-  static unsigned int timerMicroseconds(unsigned long us);
-  static bool timerReset(unsigned int id);
-  static void timerDelete(unsigned int id);
-  static bool timerCheckAndDelete(unsigned int id);
-  static bool timerCheckAndSave(unsigned int id);
-  static void timerChangeIntervalMS(unsigned int id, unsigned long ms);
-  static void timerChangeIntervalUS(unsigned int id, unsigned long us);
+	public:
+		/* Pause module for some time in miliseconds. */
+		static bool pause(Module * module, unsigned long ms);
+		/* Pause module for some time in microseconds. */
+		static bool pauseMicros(Module * module, unsigned long us);
+		/* Pause module for some time in miliseconds,
+		 * then invoke callback when resumes. */
+		static bool pause(Module * module, unsigned long ms,
+				std::function<void()> callback);
+		/* Pause module for some time in microseconds,
+		 * then invoke callback when resumes. */
+		static bool pauseMicros(Module * module, unsigned long us,
+				std::function<void()> callback);
 
-private:
-  static std::map<unsigned int, std::pair<unsigned long, long long>> timersMap;
-  static unsigned int nextAvailableTimerId;
+		/* Checks to see whether paused modules should be resumed. */
+		static void checkOnPausedModules();
 
-  static std::pair<unsigned long, unsigned long> timer(unsigned int id, unsigned long ms);
-  static std::pair<unsigned long, unsigned long> timerMicroseconds(unsigned int id, unsigned long us);
-  static bool timerCheck(std::map<unsigned int, std::pair<unsigned long, long long>>::iterator it);
+
+	protected:
+		/* Tracks paused module to re-enable it after duration passed. */
+		static void trackPausedModule(Module * module, unsigned long us);
+
+		/* Add callback to be called when module resumes. */
+		static void addCallback(Module * module,
+				std::function<void()> callback);
+
+		/* Paused modules data. (map)
+		 * Key: Module*
+		 * Value: Pair <pauseDuration, pausedSince>
+		 */
+		static std::map<Module *,
+			std::pair<unsigned long, unsigned long>> pausedModules;
+
+		/* Module callbacks data. (map)
+		 * Key: Module*
+		 * Value: Callback to invoke.
+		 */
+		static std::map<Module *, std::function<void()>> callbacks;
 
 };
 

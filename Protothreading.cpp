@@ -1,153 +1,108 @@
 /** Project       : White Board Bot Controller
-    ----------------------------------------------------------
-    File          : Protothreading.cpp
-    Description   : "Static" class containing useful methods for protothreading.
-*/
+ *  ----------------------------------------------------------
+ *  File          : Protothreading.cpp
+ *  Description   : "Static" class containing useful methods for protothreading.
+ */
 
 #include "Arduino.h"
 #include "Protothreading.hpp"
 
 /*
- * Store a hash table of timers.
- * Key: Timer unique id.
- * Value: Pair( interval, time_startedS(us) )
+ * Paused modules data. (map)
+ * Key: Module*
+ * Value: Pair <pauseDuration, pausedSince>
  */
-std::map<unsigned int, std::pair<unsigned long, long long>> Protothreading::timersMap;
+std::map<Module *, std::pair<unsigned long, unsigned long>>
+Protothreading::pausedModules;
 
 /*
- * The next available timer id.
+ * Modules callback data. (map)
+ * Key: Module*
+ * Value: Callback to invoke when module resumes.
  */
-unsigned int Protothreading::nextAvailableTimerId = 0;
+std::map<Module *, std::function<void()>> Protothreading::callbacks;
 
 /*
- * Start a timer with miliseconds interval.
- * Returns Timer id.
+ * Pause module for a specific duration in miliseconds.
  */
-unsigned int Protothreading::timer(unsigned long ms) {
-  unsigned int timerId = nextAvailableTimerId++;
-  timer(timerId, ms);
-  return timerId;
+bool Protothreading::pause(Module * module, unsigned long ms) {
+	return pauseMicros(module, ms*1000);
 }
 
 /*
- * Start a timer with microseconds interval.
- * Returns Timer id.
+ * Pause module for a specific duration in microseconds.
  */
-unsigned int Protothreading::timerMicroseconds(unsigned long us) {
-  unsigned int timerId = nextAvailableTimerId++;
-  timerMicroseconds(timerId, us);
-  return timerId;
+bool Protothreading::pauseMicros(Module * module, unsigned long us) {
+	// Check if already paused.
+	if (!module->pause()) {
+		return false;
+	}
+
+	trackPausedModule(module, us);
+	return true;
 }
 
 /*
- * Resets the timer.
+ * Pause module for a specific duration in miliseconds.
+ * Call callback when module resumes.
  */
-bool Protothreading::timerReset(unsigned int id) {
-  auto it = timersMap.find(id);
-  if (it == timersMap.end()) {
-    return false;
-  }
-  ((*it).second).second = micros();
-  return true;
+bool Protothreading::pause(Module * module, unsigned long ms,
+		std::function<void()> callback) {
+	return pauseMicros(module, ms, callback);
 }
 
 /*
- * Deletes timer.
+ * Pause module for a specific duration in microseconds.
+ * Call callback when module resumes.
  */
-void Protothreading::timerDelete(unsigned int id) {
-  auto it = timersMap.find(id);
-  if (it == timersMap.end()) {
-    return;
-  }
-  timersMap.erase(it);
+bool Protothreading::pauseMicros(Module * module, unsigned long us,
+		std::function<void()> callback) {
+	if (!pauseMicros(module, us)) {
+		return false;
+	}
+	addCallback(module, callback);
+	return true;
 }
 
 /*
- * Returns boolean on whether timer finished.
- * Deletes timer after.
+ * Checks on all paused modules and resumes them if necessary.
  */
-bool Protothreading::timerCheckAndDelete(unsigned int id) {
-  auto it = timersMap.find(id);
-  bool result;
-  if (result = timerCheck(it)) {
-    timersMap.erase(it);
-  }
-  return result;
+void Protothreading::checkOnPausedModules() {
+	// Get current time.
+	unsigned long curTime = micros();
+
+	// Loop through all paused modules and check if duration passed.
+	auto it = pausedModules.begin();
+	while (it != pausedModules.end()) {
+		if (curTime - (it->second).second < (it->second).first) {
+			it++;
+			continue;
+		}
+
+		// Duration has passed, unpause module.
+		auto tmp = it++;
+		(tmp->first)->unPause();
+		pausedModules.erase(tmp);
+	}
+}
+
+
+// Protected methods below.
+////////////////////////////////
+
+
+/*
+ * Tracks paused module to re-enable it after specific time has passed.
+ */
+void Protothreading::trackPausedModule(Module * module, unsigned long us) {
+	// Store paused module data for resuming module later.
+	pausedModules[module] = std::make_pair(us, micros());
 }
 
 /*
- * Returns boolean on whether timer finished.
- * Keeps timer in memory after (for usage later).
- * Warning: Make sure to remove timer when done with it!
+ * Adds a callback to be called once paused module resumes.
  */
-bool Protothreading::timerCheckAndSave(unsigned int id) {
-  auto it = timersMap.find(id);
-  return timerCheck(it);
-}
-
-/*
- * Change timer interval. (miliseconds)
- */
-void Protothreading::timerChangeIntervalMS(unsigned int id, unsigned long ms) {
-  timerChangeIntervalUS(id, ms*1000);
-}
-
-/*
- * Change timer interval. (microseconds)
- */
-void Protothreading::timerChangeIntervalUS(unsigned int id, unsigned long us) {
-  auto it = timersMap.find(id);
-  if (it == timersMap.end()) {
-    return;
-  }
-  ((*it).second).first = us;
-}
-
-/////////////////////////////////////
-// Private methods below
-
-/*
- * Returns boolean on whether timer finished.
- */
-bool Protothreading::timerCheck(std::map<unsigned int, std::pair<unsigned long, long long>>::iterator it) {
-  if (it == timersMap.end()) {
-    #ifdef DEBUG_MODE
-      Serial.print("WARNING - Protothreading.cpp: Tried to check on invalid timer '");
-      Serial.print(id);
-      Serial.println("'");
-    #endif
-    return true;
-  }
-  if (((*it).second).second > 0 && micros() - ((*it).second).second > ((*it).second).first) {
-    ((*it).second).second = -1; // stop timer.
-    return true;
-  } else {
-    return false;
-  }
-}
-
-/*
- * Creates and starts a timer with miliseconds interval.
- */
-std::pair<unsigned long, unsigned long> Protothreading::timer(unsigned int id, unsigned long ms) {
-  auto timer = timerMicroseconds(id, ms*1000);
-  // Convert to miliseconds.
-  timer.first /= 1000;
-  timer.second /= 1000;
-  return timer;
-}
-
-/*
- * Creates and starts a timer with microseconds interval.
- */
-std::pair<unsigned long, unsigned long> Protothreading::timerMicroseconds(unsigned int id, unsigned long us) {
-  std::map<unsigned int, std::pair<unsigned long, long long>>::const_iterator it = timersMap.find(id);
-  if (it != timersMap.end()) {
-    // Timer exists, return microseconds left.
-    return (*it).second;
-  }
-  // Timer does not exist. Create and return.
-  std::pair<unsigned long, long long> timer(us, micros());
-  timersMap[id] = timer;
-  return timersMap[id];
+void Protothreading::addCallback(Module * module,
+		std::function<void()> callback) {
+	callbacks[module] = callback;
 }

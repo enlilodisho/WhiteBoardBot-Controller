@@ -3,12 +3,26 @@
 
 class Module {
 
-public:
-  Module();
-  virtual ~Module();
+	public:
+		/* Constructor */
+		Module();
+		/* Default destructor */
+		virtual ~Module();
 
-  virtual bool initialize() = 0;
-  virtual void runTasks() = 0;
+		/* Main loop */
+		void run();
+
+		/* Initialize module settings */
+		virtual bool initialize() = 0;
+		/* Processing loop. */
+		virtual void runTasks() = 0;
+
+		/* Pause and unpause processing loop */
+		bool pause();
+		bool unPause();
+
+	protected:
+		bool paused;
 };
 
 #endif /* MODULE_H */
