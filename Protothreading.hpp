@@ -15,11 +15,11 @@ class Protothreading {
 		/* Pause module for some time in miliseconds,
 		 * then invoke callback when resumes. */
 		static bool pause(Module * module, unsigned long ms,
-				std::function<void()> callback);
+				void(*callback)(Module * module));
 		/* Pause module for some time in microseconds,
 		 * then invoke callback when resumes. */
 		static bool pauseMicros(Module * module, unsigned long us,
-				std::function<void()> callback);
+				void(*callback)(Module * module));
 
 		/* Checks to see whether paused modules should be resumed. */
 		static void checkOnPausedModules();
@@ -31,7 +31,7 @@ class Protothreading {
 
 		/* Add callback to be called when module resumes. */
 		static void addCallback(Module * module,
-				std::function<void()> callback);
+				void(*callback)(Module * module));
 
 		/* Paused modules data. (map)
 		 * Key: Module*
@@ -44,7 +44,8 @@ class Protothreading {
 		 * Key: Module*
 		 * Value: Callback to invoke.
 		 */
-		static std::map<Module *, std::function<void()>> callbacks;
+		static std::map<Module *, void(*)(Module *)> callbacks;
+    
 
 };
 

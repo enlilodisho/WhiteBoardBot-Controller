@@ -9,16 +9,20 @@
 #include "Controller.hpp"
 #include "Protothreading.hpp"
 #include "config.hpp"
+#include "LedBlinkerModule.hpp"
 
+LedBlinkerModule * ledBlinker;
 void setup() {
 #ifdef DEBUG_MODE
 	Serial.begin(SERIAL_RATE);
 #endif /* DEBUG_MODE */
 
 	// Initialize all modules.
-	for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
+	/*for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
 		STARTUP_MODULES[i]->initialize();
-	}
+	}*/
+  ledBlinker = new LedBlinkerModule();
+  ledBlinker->initialize();
 }
 
 void loop() {
@@ -26,7 +30,8 @@ void loop() {
 	Protothreading::checkOnPausedModules();
 
 	// Run all modules.
-	for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
+	/*for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
 		STARTUP_MODULES[i]->run();
-	}
+	}*/
+  ledBlinker->run();
 }

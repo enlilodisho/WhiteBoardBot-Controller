@@ -20,7 +20,7 @@ Protothreading::pausedModules;
  * Key: Module*
  * Value: Callback to invoke when module resumes.
  */
-std::map<Module *, std::function<void()>> Protothreading::callbacks;
+std::map<Module *, void(*)(Module *)> Protothreading::callbacks;
 
 /*
  * Pause module for a specific duration in miliseconds.
@@ -47,8 +47,8 @@ bool Protothreading::pauseMicros(Module * module, unsigned long us) {
  * Call callback when module resumes.
  */
 bool Protothreading::pause(Module * module, unsigned long ms,
-		std::function<void()> callback) {
-	return pauseMicros(module, ms, callback);
+		void(*callback)(Module * module)) {
+	return pauseMicros(module, ms*1000, callback);
 }
 
 /*
@@ -56,7 +56,7 @@ bool Protothreading::pause(Module * module, unsigned long ms,
  * Call callback when module resumes.
  */
 bool Protothreading::pauseMicros(Module * module, unsigned long us,
-		std::function<void()> callback) {
+		void(*callback)(Module * module)) {
 	if (!pauseMicros(module, us)) {
 		return false;
 	}
@@ -78,11 +78,25 @@ void Protothreading::checkOnPausedModules() {
 			it++;
 			continue;
 		}
+		// Duration has passed. //
+		// Get current module.
+		Module * module = it->first;
 
-		// Duration has passed, unpause module.
-		auto tmp = it++;
-		(tmp->first)->unPause();
-		pausedModules.erase(tmp);
+		// Unpause module.
+		module->unPause();
+		// Remove module from paused modules vector.
+		auto tmpIt = it++;
+		pausedModules.erase(tmpIt);
+
+		// Check if module has callback.
+		auto cbIt = callbacks.find(module);
+		if (cbIt != callbacks.end()) {
+			// Module has callback.
+			// Invoke callback.
+			(cbIt->second)(module);
+			// Remove from callbacks.
+			callbacks.erase(cbIt);
+		}
 	}
 }
 
@@ -103,6 +117,6 @@ void Protothreading::trackPausedModule(Module * module, unsigned long us) {
  * Adds a callback to be called once paused module resumes.
  */
 void Protothreading::addCallback(Module * module,
-		std::function<void()> callback) {
+		void(*callback)(Module * module)) {
 	callbacks[module] = callback;
 }

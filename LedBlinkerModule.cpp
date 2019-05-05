@@ -20,13 +20,15 @@ bool LedBlinkerModule::initialize() {
 }
 
 void LedBlinkerModule::runTasks() {
-	Protothreading::pause(this, 250, [&]() -> void {
-		if (ledPinHigh) {
-			digitalWrite(PC13, LOW);
-			ledPinHigh = false;
-		} else {
-			digitalWrite(PC13, HIGH);
-			ledPinHigh = true;
-		}
-	});
+	Protothreading::pause(this, 1000, toggleLed);
+}
+
+void LedBlinkerModule::toggleLed(Module * module) {
+  if (((LedBlinkerModule*)module)->ledPinHigh) {
+      digitalWrite(PC13, LOW);
+      ((LedBlinkerModule*)module)->ledPinHigh = false;
+    } else {
+      digitalWrite(PC13, HIGH);
+      ((LedBlinkerModule*)module)->ledPinHigh = true;
+    }
 }

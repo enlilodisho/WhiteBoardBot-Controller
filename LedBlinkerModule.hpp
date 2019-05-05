@@ -10,6 +10,7 @@ class LedBlinkerModule: public Module {
 
 		bool initialize();
 		void runTasks();
+    static void toggleLed(Module * module);
 
   private:
     bool ledPinHigh;

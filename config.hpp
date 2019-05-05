@@ -19,8 +19,8 @@
 // highest priority as they are being updated as fast as possible.
 // Also note that adding more startup modules will slow down all other modules.
 #define NUM_STARTUP_MODULES 1
-LedBlinkerModule * const ledBlinker = new LedBlinkerModule;
-Module * const STARTUP_MODULES[NUM_STARTUP_MODULES] = { ledBlinker };
+//LedBlinkerModule * const ledBlinker = new LedBlinkerModule;
+//Module * const STARTUP_MODULES[NUM_STARTUP_MODULES] = { ledBlinker };
 
 
 
