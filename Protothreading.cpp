@@ -82,20 +82,21 @@ void Protothreading::checkOnPausedModules() {
 		// Get current module.
 		Module * module = it->first;
 
-		// Unpause module.
-		module->unPause();
 		// Remove module from paused modules vector.
 		auto tmpIt = it++;
 		pausedModules.erase(tmpIt);
+		// Unpause module.
+		module->unPause();
 
 		// Check if module has callback.
 		auto cbIt = callbacks.find(module);
 		if (cbIt != callbacks.end()) {
 			// Module has callback.
-			// Invoke callback.
-			(cbIt->second)(module);
+			auto callback = cbIt->second;
 			// Remove from callbacks.
 			callbacks.erase(cbIt);
+			// Invoke callback.
+			callback(module);
 		}
 	}
 }

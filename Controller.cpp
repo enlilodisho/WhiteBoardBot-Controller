@@ -10,8 +10,10 @@
 #include "Protothreading.hpp"
 #include "config.hpp"
 #include "LedBlinkerModule.hpp"
+#include "MotorDriver.hpp"
 
 LedBlinkerModule * ledBlinker;
+MotorDriver * motorDriver;
 void setup() {
 #ifdef DEBUG_MODE
 	Serial.begin(SERIAL_RATE);
@@ -19,10 +21,12 @@ void setup() {
 
 	// Initialize all modules.
 	/*for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
-		STARTUP_MODULES[i]->initialize();
-	}*/
-  ledBlinker = new LedBlinkerModule();
-  ledBlinker->initialize();
+	  STARTUP_MODULES[i]->initialize();
+	  }*/
+	ledBlinker = new LedBlinkerModule();
+	ledBlinker->initialize();
+	motorDriver = new MotorDriver(PA8, PB15, PB14, PB13, PB12);
+	motorDriver->initialize();
 }
 
 void loop() {
@@ -31,7 +35,9 @@ void loop() {
 
 	// Run all modules.
 	/*for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
-		STARTUP_MODULES[i]->run();
-	}*/
-  ledBlinker->run();
+	  STARTUP_MODULES[i]->run();
+	  }*/
+	ledBlinker->run();
+	motorDriver->run();
+	motorDriver->stepMotor();
 }
