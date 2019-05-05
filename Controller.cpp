@@ -27,6 +27,7 @@ void setup() {
 	ledBlinker->initialize();
 	motorDriver = new MotorDriver(PA8, PB15, PB14, PB13, PB12);
 	motorDriver->initialize();
+	motorDriver->stepMotor(200);
 }
 
 void loop() {
@@ -39,5 +40,4 @@ void loop() {
 	  }*/
 	ledBlinker->run();
 	motorDriver->run();
-	motorDriver->stepMotor();
 }

@@ -2,6 +2,7 @@
 #define MOTOR_DRIVER_H
 
 #include "Module.hpp"
+#include <utility>
 
 class MotorDriver: public Module {
 
@@ -14,7 +15,9 @@ class MotorDriver: public Module {
 		void runTasks();
 
 		void setDirection(const int & direction);
-		bool stepMotor();
+		bool stepMotor(unsigned int count = 1);
+		bool stepMotor(unsigned int count,
+				Module* callbackModule, void(*callback)(Module*));
 
 		// Power management
 		void suspend();
@@ -26,9 +29,11 @@ class MotorDriver: public Module {
 		const int pinEnable, pinReset, pinSleep, pinStep, pinDir;
 
 		static void stepMotor(Module * module);
+		unsigned int stepCount;
 
 	private:
-		int stepping = 0;
+		int steppingStatus;
+		std::pair<Module*, void(*)(Module*)> stepCallback;
 
 };
 

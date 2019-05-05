@@ -29,7 +29,12 @@ MotorDriver::MotorDriver(uint penable, uint preset, uint psleep, uint pstep,
 	setDirection(CLOCKWISE);
 	// Initialize step pin to low.
 	pinMode(pinStep, INPUT_PULLDOWN);
-	}
+
+	// Initialize variables
+	stepCount = 0;
+	steppingStatus = 0;
+	stepCallback = std::make_pair(nullptr, nullptr);
+}
 
 /*
  * Destructor.
@@ -50,21 +55,48 @@ bool MotorDriver::initialize() {
  * Processing loop.
  */
 void MotorDriver::runTasks() {
-
+	// Invoke step callback if finished stepping.
+	if (stepCount == 0 && stepCallback.second != nullptr) {
+		stepCallback.second(stepCallback.first);
+		// Remove callback after invoked.
+		stepCallback.first = nullptr;
+		stepCallback.second = nullptr;
+	}
 }
 
 /*
  * Steps motor once.
  * Returns true if stepping.
- * Returns false if already stepping from another request.
+ * Returns false if already stepping from another request or count was 0.
  */
-bool MotorDriver::stepMotor() {
-	if (stepping != 0) {
+bool MotorDriver::stepMotor(unsigned int count) {
+	// Check if currently stepping.
+	if (stepCount != 0) {
 		return false;
 	}
+	// Check if requested 0 steps.
+	if (count == 0) {
+		return false;
+	}
+	stepCount = count;
 	stepMotor(this);
 	return true;
 }
+
+/*
+ * Returns true if stepping.
+ * Returns false if already stepping from another request or count was 0.
+ * If returned true, then invokes callback once motor done stepping.
+ */
+bool MotorDriver::stepMotor(unsigned int count, Module * callbackModule,
+		void(*callback)(Module*)) {
+	if (!stepMotor(count)) {
+		return false;
+	}
+	stepCallback.first = callbackModule;
+	stepCallback.second = callback;
+	return true;
+}		
 
 /*
  * Step motor once.
@@ -73,10 +105,10 @@ bool MotorDriver::stepMotor() {
  */
 void MotorDriver::stepMotor(Module * module) {
 	MotorDriver * driver = (MotorDriver*)module;
-	switch (driver->stepping) {
+	switch (driver->steppingStatus) {
 
 		case 0: // Pullup step pin.
-			driver->stepping = 1;
+			driver->steppingStatus = 1;
 			pinMode(driver->pinStep, INPUT_PULLUP);
 			// Wait 1ms.
 			Protothreading::pause(module, 1, stepMotor);
@@ -84,13 +116,19 @@ void MotorDriver::stepMotor(Module * module) {
 
 		case 1: // Puldown step pin.
 			pinMode(driver->pinStep, INPUT_PULLDOWN);
-			driver->stepping = 2;
+			if (--driver->stepCount > 0) {
+				// Still have more stepping to do.
+				driver->steppingStatus = 0;
+			} else {
+				// Finished stepping.
+				driver->steppingStatus = 2;
+			}
 			// 1ms stepping cooldown.
 			Protothreading::pause(module, 1, stepMotor);
 			return;
 
 		case 2: // Enable stepping again.
-			driver->stepping = 0;
+			driver->steppingStatus = 0;
 			return;
 	}
 }
@@ -100,9 +138,9 @@ void MotorDriver::stepMotor(Module * module) {
  */
 void MotorDriver::setDirection(const int & direction) {
 	if (direction == CLOCKWISE) {
-		pinMode(pinDir, INPUT_PULLDOWN);
-	} else if (direction == COUNTERCLOCKWISE) {
 		pinMode(pinDir, INPUT_PULLUP);
+	} else if (direction == COUNTERCLOCKWISE) {
+		pinMode(pinDir, INPUT_PULLDOWN);
 	}
 }
 
