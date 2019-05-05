@@ -32,7 +32,7 @@ class MotorDriver: public Module {
 		unsigned int stepCount;
 
 	private:
-		int steppingStatus;
+		unsigned char steppingStatus;
 		std::pair<Module*, void(*)(Module*)> stepCallback;
 
 };

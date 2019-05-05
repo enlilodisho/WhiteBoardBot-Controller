@@ -8,10 +8,10 @@
 #include "MotorDriver.hpp"
 #include "Protothreading.hpp"
 
-const static int CLOCKWISE = 1;
-const static int COUNTERCLOCKWISE = 2;
-const static int FORWARD = CLOCKWISE;
-const static int REVERSE = COUNTERCLOCKWISE;
+const static unsigned char CLOCKWISE = '1';
+const static unsigned char COUNTERCLOCKWISE = '2';
+const static unsigned char FORWARD = CLOCKWISE;
+const static unsigned char REVERSE = COUNTERCLOCKWISE;
 
 /*
  * Constructor.
@@ -32,7 +32,7 @@ MotorDriver::MotorDriver(uint penable, uint preset, uint psleep, uint pstep,
 
 	// Initialize variables
 	stepCount = 0;
-	steppingStatus = 0;
+	steppingStatus = '0';
 	stepCallback = std::make_pair(nullptr, nullptr);
 }
 
@@ -107,28 +107,28 @@ void MotorDriver::stepMotor(Module * module) {
 	MotorDriver * driver = (MotorDriver*)module;
 	switch (driver->steppingStatus) {
 
-		case 0: // Pullup step pin.
-			driver->steppingStatus = 1;
+		case '0': // Pullup step pin.
+			driver->steppingStatus = '1';
 			pinMode(driver->pinStep, INPUT_PULLUP);
 			// Wait 1ms.
 			Protothreading::pause(module, 1, stepMotor);
 			return;
 
-		case 1: // Puldown step pin.
+		case '1': // Puldown step pin.
 			pinMode(driver->pinStep, INPUT_PULLDOWN);
 			if (--driver->stepCount > 0) {
 				// Still have more stepping to do.
-				driver->steppingStatus = 0;
+				driver->steppingStatus = '0';
 			} else {
 				// Finished stepping.
-				driver->steppingStatus = 2;
+				driver->steppingStatus = '2';
 			}
 			// 1ms stepping cooldown.
 			Protothreading::pause(module, 1, stepMotor);
 			return;
 
-		case 2: // Enable stepping again.
-			driver->steppingStatus = 0;
+		case '2': // Enable stepping again.
+			driver->steppingStatus = '0';
 			return;
 	}
 }
