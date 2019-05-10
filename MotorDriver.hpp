@@ -7,7 +7,8 @@
 class MotorDriver: public Module {
 
 	public:
-		MotorDriver(uint penable, uint preset, uint psleep, uint pstep, uint pdir);
+		MotorDriver(unsigned int penable, unsigned int preset,
+			unsigned int psleep, unsigned int pstep, unsigned int pdir);
 
 		~MotorDriver();
 

@@ -14,6 +14,7 @@
 
 LedBlinkerModule * ledBlinker;
 MotorDriver * motorDriver;
+
 void setup() {
 #ifdef DEBUG_MODE
 	Serial.begin(SERIAL_RATE);
@@ -25,9 +26,8 @@ void setup() {
 	  }*/
 	ledBlinker = new LedBlinkerModule();
 	ledBlinker->initialize();
-	motorDriver = new MotorDriver(PA8, PB15, PB14, PB13, PB12);
+	motorDriver = new MotorDriver(PA1, PA2, PA0, PA4, PA3);
 	motorDriver->initialize();
-	motorDriver->stepMotor(200);
 }
 
 void loop() {

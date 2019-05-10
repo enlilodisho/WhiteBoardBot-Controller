@@ -16,8 +16,9 @@ const static unsigned char REVERSE = COUNTERCLOCKWISE;
 /*
  * Constructor.
  */
-MotorDriver::MotorDriver(uint penable, uint preset, uint psleep, uint pstep,
-		uint pdir): pinEnable(penable), pinReset(preset), pinSleep(psleep),
+MotorDriver::MotorDriver(unsigned int penable, unsigned int preset,
+		unsigned int psleep, unsigned int pstep, unsigned int pdir):
+		pinEnable(penable), pinReset(preset), pinSleep(psleep),
 		pinStep(pstep), pinDir(pdir) {
 	// Turn off driver.
 	suspend();
