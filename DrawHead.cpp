@@ -6,7 +6,6 @@
 
 #include "Arduino.h"
 #include "DrawHead.hpp"
-#include <cmath> // std::abs
 
 /*
  * Constructor.
@@ -95,7 +94,8 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY) {
 			// Need to move DrawHead up.
 			yMotor->setDirection(MotorDriver::COUNTERCLOCKWISE);
 		}
-		deltaPos = std::abs(desiredY - currPos[1]);
+		deltaPos = (desiredY > currPos[1]) ? (desiredY - currPos[1])
+			: (currPos[1] - desiredY);
 		if (!yMotor->stepMotor(deltaPos, this, updateMoveStatus)) {
 			// Failure to move y, but request for moving x succeeded.
 			updateMoveStatus(this);
@@ -124,6 +124,7 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY,
 	}
 	moveCallback.first = callbackModule;
 	moveCallback.second = callback;
+	return true;
 }
 
 /*
