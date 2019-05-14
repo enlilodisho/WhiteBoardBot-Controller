@@ -26,6 +26,11 @@ class MotorDriver: public Module {
 		void enable();
 		void disable();
 
+    const static unsigned char CLOCKWISE;
+    const static unsigned char COUNTERCLOCKWISE;
+    const static unsigned char FORWARD;
+    const static unsigned char REVERSE;
+
 	protected:
 		const int pinEnable, pinReset, pinSleep, pinStep, pinDir;
 

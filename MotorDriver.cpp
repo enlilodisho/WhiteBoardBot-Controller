@@ -8,10 +8,10 @@
 #include "MotorDriver.hpp"
 #include "Protothreading.hpp"
 
-const static unsigned char CLOCKWISE = '1';
-const static unsigned char COUNTERCLOCKWISE = '2';
-const static unsigned char FORWARD = CLOCKWISE;
-const static unsigned char REVERSE = COUNTERCLOCKWISE;
+const unsigned char MotorDriver::CLOCKWISE = '1';
+const unsigned char MotorDriver::COUNTERCLOCKWISE = '2';
+const unsigned char MotorDriver::FORWARD = CLOCKWISE;
+const unsigned char MotorDriver::REVERSE = COUNTERCLOCKWISE;
 
 /*
  * Constructor.
