@@ -65,12 +65,12 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY) {
 		if (desiredX > currPos[0]) {
 			// Need to move DrawHead to the right.
 			xMotor->setDirection(MotorDriver::FORWARD);
+			deltaPos = desiredX - currPos[0];
 		} else if (desiredX < currPos[0]) {
 			// Need to move DrawHead to the left.
 			xMotor->setDirection(MotorDriver::REVERSE);
+			deltaPos = currPos[0] - desiredX;
 		}
-		deltaPos = (desiredX > currPos[0]) ? (desiredX - currPos[0])
-			: (currPos[0] - desiredX);
 		if (!xMotor->stepMotor(deltaPos, this, updateMoveStatus)) {
 			// Failure, abort moving.
 			Serial.println("ERROR! Failed to move x-axis motor. \
@@ -90,12 +90,12 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY) {
 		if (desiredY > currPos[1]) {
 			// Need to move DrawHead down.
 			yMotor->setDirection(MotorDriver::CLOCKWISE);
+			deltaPos = desiredY - currPos[1];
 		} else if (desiredY < currPos[1]) {
 			// Need to move DrawHead up.
 			yMotor->setDirection(MotorDriver::COUNTERCLOCKWISE);
+			deltaPos = currPos[1] - desiredY;
 		}
-		deltaPos = (desiredY > currPos[1]) ? (desiredY - currPos[1])
-			: (currPos[1] - desiredY);
 		if (!yMotor->stepMotor(deltaPos, this, updateMoveStatus)) {
 			// Failure to move y, but request for moving x succeeded.
 			updateMoveStatus(this);
@@ -165,7 +165,10 @@ bool DrawHead::isMoving() {
  * Detects the size of the whiteboard.
  */
 void DrawHead::calibrate() {
-	// Move draw head to home position (0,0).
+	// [TODO] Move draw head to home position (0,0).
+	// Idea: Have sensors on top left and right edges to detect when drawing
+	// mechanism is at home position.
+	// For now, just assume that the robot always starts at 0,0.
 	_currPos[0] = 0;
 	_currPos[1] = 0;
 }
