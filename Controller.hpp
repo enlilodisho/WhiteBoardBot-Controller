@@ -5,5 +5,6 @@
 
 void setup();
 void loop();
+void setupWhiteboardBotModules();
 
 #endif /* CONTROLLER_H */
