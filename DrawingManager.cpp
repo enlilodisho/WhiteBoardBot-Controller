@@ -10,6 +10,7 @@
  * Constructor.
  */
 DrawingManager::DrawingManager(DrawHead & drawHead): drawHead(drawHead) {
+	drawQueue = new DataQueue<Point>(100);
 }
 
 /*
@@ -35,10 +36,9 @@ void DrawingManager::runTasks() {
 	if (!drawHead.isMoving()) {
 		// Draw head is stationary.
 		// Check if drawing head is not empty.
-		if (drawQueue.size() > 0) {
-			// Get next point from queue.
-			std::pair<int, int> nextPoint = drawQueue.front();
-			drawQueue.pop();
+		if (drawQueue->item_count() > 0) {
+			// Get next point from queue and remove it.
+			Point nextPoint = drawQueue->dequeue();
 
 			// Check if dummy point.
 			// Dummy points are points containing a negative
@@ -49,17 +49,29 @@ void DrawingManager::runTasks() {
 			// 		Push marker against board.
 			// 	2. X=-2 : End drawing.
 			// 		Lift marker from board.
-			if (nextPoint.first < 0 || nextPoint.second < 0) {
+			if (nextPoint.x < 0 || nextPoint.y < 0) {
 				// Read signal.
-				if (nextPoint.first == -1) {
+				if (nextPoint.x == -1) {
 					// TODO Begin drawing.
 				} else {
 					// TODO Stop drawing.
 				}
 			} else {
 				// Move head to new point.
-				drawHead.move(nextPoint.first, nextPoint.second);
+				drawHead.move(nextPoint.x, nextPoint.y);
 			}
 		}
 	}
+}
+
+/*
+ * Adds a pixel to draw to the queue.
+ */
+void DrawingManager::addPixel(unsigned int x, unsigned int y) {
+	Point last = drawQueue->back();
+	// TODO calculate distance between new pixel and last pixel.
+	// If distance great enough, add stop drawing dummy point, pixel point,
+	// 			   then add start drawing dummy point to queue.
+	// Otherwise, just add pixel point to queue.
+	drawQueue->enqueue((Point){x,y});
 }

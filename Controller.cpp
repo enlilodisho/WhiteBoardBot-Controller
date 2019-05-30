@@ -9,25 +9,26 @@
 #include "Controller.hpp"
 #include "Protothreading.hpp"
 #include "config.hpp"
+#include "Module.hpp"
+// Include all startup modules below:
 #include "LedBlinkerModule.hpp"
-#include "MotorDriver.hpp"
 
-LedBlinkerModule * ledBlinker;
-MotorDriver * motorDriver;
+// Add pointers to startup modules in array below.
+Module* startupModules[] = {new LedBlinkerModule()};
+
+// Get number of startup modules.
+const size_t NUM_STARTUP_MODULES = (sizeof startupModules /
+		sizeof startupModules[0]);
 
 void setup() {
 #ifdef DEBUG_MODE
 	Serial.begin(SERIAL_RATE);
 #endif /* DEBUG_MODE */
 
-	// Initialize all modules.
-	/*for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
-	  STARTUP_MODULES[i]->initialize();
-	  }*/
-	ledBlinker = new LedBlinkerModule();
-	ledBlinker->initialize();
-	motorDriver = new MotorDriver(PA1, PA2, PA0, PA4, PA3);
-	motorDriver->initialize();
+	// Initialize all startup modules.
+	for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
+		startupModules[i]->initialize();
+	}
 }
 
 void loop() {
@@ -35,9 +36,7 @@ void loop() {
 	Protothreading::checkOnPausedModules();
 
 	// Run all modules.
-	/*for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
-	  STARTUP_MODULES[i]->run();
-	  }*/
-	ledBlinker->run();
-	motorDriver->run();
+	for (unsigned int i = 0; i < NUM_STARTUP_MODULES; i++) {
+		startupModules[i]->run();
+	}
 }

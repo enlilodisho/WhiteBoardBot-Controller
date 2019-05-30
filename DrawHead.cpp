@@ -5,6 +5,7 @@
  */
 
 #include "Arduino.h"
+#include "config.hpp"
 #include "DrawHead.hpp"
 
 /*
@@ -71,7 +72,8 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY) {
 			xMotor->setDirection(MotorDriver::REVERSE);
 			deltaPos = currPos[0] - desiredX;
 		}
-		if (!xMotor->stepMotor(deltaPos, this, updateMoveStatus)) {
+		if (!xMotor->stepMotor(deltaPos * MOTOR_X_STEPS_MM, this,
+				updateMoveStatus)) {
 			// Failure, abort moving.
 			Serial.println("ERROR! Failed to move x-axis motor. \
 					Aborted move request.");
@@ -96,11 +98,12 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY) {
 			yMotor->setDirection(MotorDriver::COUNTERCLOCKWISE);
 			deltaPos = currPos[1] - desiredY;
 		}
-		if (!yMotor->stepMotor(deltaPos, this, updateMoveStatus)) {
+		if (!yMotor->stepMotor(deltaPos * MOTOR_Y_STEPS_MM, this,
+				updateMoveStatus)) {
 			// Failure to move y, but request for moving x succeeded.
 			updateMoveStatus(this);
-			Serial.println("ERROR! Failed to move y motor, while x motor \
-					succeeded.");
+			Serial.println("ERROR! Failed to move y motor, while x \
+					motor succeeded.");
 		} else {
 			_currPos[1] += desiredY;
 		}

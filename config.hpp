@@ -7,21 +7,31 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "LedBlinkerModule.hpp"
-
 // Uncomment line below to enable Serial debug messages.
 #define DEBUG_MODE
 // Serial Baud Rate
 #define SERIAL_RATE 115200
 
-// Modules allow us to emulate multithreading (we're actually doing protothreading).
-// Startup modules are started by the Controller on startup. These modules are
-// highest priority as they are being updated as fast as possible.
-// Also note that adding more startup modules will slow down all other modules.
-#define NUM_STARTUP_MODULES 1
-//LedBlinkerModule * const ledBlinker = new LedBlinkerModule;
-//Module * const STARTUP_MODULES[NUM_STARTUP_MODULES] = { ledBlinker };
 
+/* Draw Head Motors Config */
+// X-Axis Motor //
+// Pins
+#define PIN_MOTOR_X_SLEEP	PA0
+#define PIN_MOTOR_X_ENABLE	PA1
+#define PIN_MOTOR_X_RESET	PA2
+#define PIN_MOTOR_X_DIR		PA3
+#define PIN_MOTOR_X_STEP	PA4
+// The number of steps to travel 1 milimeter in x direction.
+#define MOTOR_X_STEPS_MM	5
+// Y-Axis Motor //
+// Pins
+#define PIN_MOTOR_Y_SLEEP	PA5
+#define PIN_MOTOR_Y_ENABLE	PA6
+#define PIN_MOTOR_Y_RESET	PA7
+#define PIN_MOTOR_Y_DIR		PB0
+#define PIN_MOTOR_Y_STEP	PB1
+// The number of steps to travel 1 milimeter in y direction.
+#define MOTOR_Y_STEPS_MM	5
 
 
 #endif /* CONFIG_H */

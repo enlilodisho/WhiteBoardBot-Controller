@@ -8,7 +8,8 @@ class MotorDriver: public Module {
 
 	public:
 		MotorDriver(unsigned int penable, unsigned int preset,
-			unsigned int psleep, unsigned int pstep, unsigned int pdir);
+				unsigned int psleep, unsigned int pstep,
+				unsigned int pdir);
 
 		~MotorDriver();
 
@@ -26,10 +27,10 @@ class MotorDriver: public Module {
 		void enable();
 		void disable();
 
-    const static unsigned char CLOCKWISE;
-    const static unsigned char COUNTERCLOCKWISE;
-    const static unsigned char FORWARD;
-    const static unsigned char REVERSE;
+		const static unsigned char CLOCKWISE;
+		const static unsigned char COUNTERCLOCKWISE;
+		const static unsigned char FORWARD;
+		const static unsigned char REVERSE;
 
 	protected:
 		const int pinEnable, pinReset, pinSleep, pinStep, pinDir;
