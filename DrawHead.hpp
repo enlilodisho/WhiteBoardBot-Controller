@@ -9,7 +9,8 @@ class DrawHead: public Module {
 	public:
 		// Constructor
 		// TODO Include mechanism for pressing marker against board.
-		DrawHead(struct MotorDriverPins * xMotorPins, struct MotorDriverPins * yMotorPins);
+		DrawHead(const struct MotorDriverPins & xMotorPins,
+				const struct MotorDriverPins & yMotorPins);
 		// Destructor
 		~DrawHead();
 

@@ -11,12 +11,13 @@
 /*
  * Constructor.
  */
-DrawHead::DrawHead(MotorDriverPins * xMotorPins, MotorDriverPins * yMotorPins) {
+DrawHead::DrawHead(const MotorDriverPins & xMotorPins,
+		const MotorDriverPins & yMotorPins) {
 	// Create Motor Driver module for each motor.
-	xMotor = new MotorDriver(xMotorPins->enable, xMotorPins->reset,
-			xMotorPins->sleep, xMotorPins->step, xMotorPins->dir);
-	yMotor = new MotorDriver(yMotorPins->enable, yMotorPins->reset,
-			yMotorPins->sleep, yMotorPins->step, yMotorPins->dir);
+	xMotor = new MotorDriver(xMotorPins.enable, xMotorPins.reset,
+			xMotorPins.sleep, xMotorPins.step, xMotorPins.dir);
+	yMotor = new MotorDriver(yMotorPins.enable, yMotorPins.reset,
+			yMotorPins.sleep, yMotorPins.step, yMotorPins.dir);
 
 	moveStatus = 0;
 	moveCallback.first = nullptr;
@@ -73,7 +74,7 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY) {
 			deltaPos = currPos[0] - desiredX;
 		}
 		if (!xMotor->stepMotor(deltaPos * MOTOR_X_STEPS_MM, this,
-				updateMoveStatus)) {
+					updateMoveStatus)) {
 			// Failure, abort moving.
 			Serial.println("ERROR! Failed to move x-axis motor. \
 					Aborted move request.");
@@ -99,7 +100,7 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY) {
 			deltaPos = currPos[1] - desiredY;
 		}
 		if (!yMotor->stepMotor(deltaPos * MOTOR_Y_STEPS_MM, this,
-				updateMoveStatus)) {
+					updateMoveStatus)) {
 			// Failure to move y, but request for moving x succeeded.
 			updateMoveStatus(this);
 			Serial.println("ERROR! Failed to move y motor, while x \
