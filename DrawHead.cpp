@@ -60,20 +60,19 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY) {
 		return false;
 	}
 	moveStatus = 1;
-	unsigned int deltaPos;
+	int deltaPos;
 
 	// Check if x-axis needs to be moved first.
 	if (desiredX != currPos[0]) {
+		deltaPos = desiredX - currPos[0];
 		if (desiredX > currPos[0]) {
 			// Need to move DrawHead to the right.
 			xMotor->setDirection(MotorDriver::FORWARD);
-			deltaPos = desiredX - currPos[0];
 		} else if (desiredX < currPos[0]) {
 			// Need to move DrawHead to the left.
 			xMotor->setDirection(MotorDriver::REVERSE);
-			deltaPos = currPos[0] - desiredX;
 		}
-		if (!xMotor->stepMotor(deltaPos * MOTOR_X_STEPS_MM, this,
+		if (!xMotor->stepMotor(abs(deltaPos) * MOTOR_X_STEPS_MM, this,
 					updateMoveStatus)) {
 			// Failure, abort moving.
 			Serial.println("ERROR! Failed to move x-axis motor. \
@@ -81,7 +80,7 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY) {
 			moveStatus = 0;
 			return false;
 		} else {
-			_currPos[0] += desiredX;
+			_currPos[0] += deltaPos;
 		}
 	} else {
 		// Draw head already at the correct horizontal position.
@@ -90,23 +89,22 @@ bool DrawHead::move(unsigned int desiredX, unsigned int desiredY) {
 
 	// Check if y-axis needs to be moved.
 	if (desiredY != currPos[1]) {
+		deltaPos = desiredY - currPos[1];
 		if (desiredY > currPos[1]) {
 			// Need to move DrawHead down.
 			yMotor->setDirection(MotorDriver::CLOCKWISE);
-			deltaPos = desiredY - currPos[1];
 		} else if (desiredY < currPos[1]) {
 			// Need to move DrawHead up.
 			yMotor->setDirection(MotorDriver::COUNTERCLOCKWISE);
-			deltaPos = currPos[1] - desiredY;
 		}
-		if (!yMotor->stepMotor(deltaPos * MOTOR_Y_STEPS_MM, this,
+		if (!yMotor->stepMotor(abs(deltaPos) * MOTOR_Y_STEPS_MM, this,
 					updateMoveStatus)) {
 			// Failure to move y, but request for moving x succeeded.
 			updateMoveStatus(this);
 			Serial.println("ERROR! Failed to move y motor, while x \
 					motor succeeded.");
 		} else {
-			_currPos[1] += desiredY;
+			_currPos[1] += deltaPos;
 		}
 	} else {
 		// Draw head already at the correct vertical position.
