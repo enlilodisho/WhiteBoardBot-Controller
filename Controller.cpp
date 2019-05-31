@@ -12,13 +12,14 @@
 #include "Module.hpp"
 // Include modules below:
 #include "LedBlinkerModule.hpp"
+#include "BluetoothAdapter.hpp"
 #include "DrawHead.hpp"
 #include "DrawingManager.hpp"
 #include "MotorDriver.hpp"
 
 // Add pointers to startup modules in array below.
 Module* startupModules[] = {new LedBlinkerModule(), (DrawHead*)nullptr,
-	(DrawingManager*)nullptr};
+	(DrawingManager*)nullptr, (BluetoothAdapter*)nullptr};
 
 // Get number of startup modules.
 const size_t NUM_STARTUP_MODULES = (sizeof startupModules /
@@ -64,12 +65,17 @@ void setupWhiteboardBotModules() {
 
 	// Create DrawHead on stack.
 	DrawHead* drawHead = new DrawHead(xMotorPins, yMotorPins);
-	
+
 	// Create DrawingManager on stack.
 	DrawingManager* drawManager = new DrawingManager(*drawHead);
+
+	// Create BluetoothAdapter on stack.
+	BluetoothAdapter* btAdapter = new BluetoothAdapter(Serial1, *drawManager);
 
 	// Add DrawHead to startup modules.
 	startupModules[1] = drawHead;
 	// Add DrawingManager to startup modules.
 	startupModules[2] = drawManager;
+	// Add BluetoothAdapter to startup modules.
+	startupModules[3] = btAdapter;
 }
