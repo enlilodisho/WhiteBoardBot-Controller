@@ -33,11 +33,24 @@ bool BluetoothAdapter::initialize() {
  * Processing loop.
  */
 void BluetoothAdapter::runTasks() {
-	if (dataAvailable() > 0) {
-		// [TODO] Convert to bytes for final version.
-		String receivedPositionX = serial.readStringUntil(',');
-		String receivedPositionY = serial.readStringUntil('\r\n');
-		drawManager.addPixel(receivedPositionX.toInt(), receivedPositionY.toInt());
+	// If two integers are available to read.
+	if (dataAvailable() >= 2*sizeof(int)) {
+		// Read x position.
+		int receivedPositionX = 0;
+		for (int i = 0; i < sizeof(int); i++) {
+			receivedPositionX <<= 8; // shift 8 bits
+			receivedPositionX |= serial.read(); // OR in one byte.
+		}
+
+		// Read y position.
+		int receivedPositionY = 0;
+		for (int i = 0; i < sizeof(int); i++) {
+			receivedPositionY <<= 8; // shift 8 bits
+			receivedPositionY |= serial.read(); // OR in one byte.
+		}
+
+		// Send coordinates read to DrawingManager.
+		drawManager.addPixel(receivedPositionX, receivedPositionY);
 	}
 }
 
