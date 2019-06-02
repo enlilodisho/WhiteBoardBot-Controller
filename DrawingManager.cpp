@@ -4,6 +4,7 @@
  *  Description   : Handles controling draw head to draw on whiteboard.
  */
 
+#include <cmath>
 #include "DrawingManager.hpp"
 
 /*
@@ -70,10 +71,19 @@ void DrawingManager::runTasks() {
  * Adds a pixel to draw to the queue.
  */
 void DrawingManager::addPixel(unsigned int x, unsigned int y) {
-	Point last = drawQueue->back();
-	// TODO calculate distance between new pixel and last pixel.
+	// Calculate distance between new pixel and last pixel.
 	// If distance great enough, add stop drawing dummy point, pixel point,
 	// 			   then add start drawing dummy point to queue.
 	// Otherwise, just add pixel point to queue.
+	if (drawQueue->item_count() > 0) {
+		Point last = drawQueue->back();
+		int sqDist = std::pow((x-last.x), 2) + std::pow((y-last.y), 2);
+		if (sqDist > 4) {
+			drawQueue->enqueue((Point){-2,0});
+			drawQueue->enqueue((Point){x,y});
+			drawQueue->enqueue((Point){-1,0});
+			return;
+		}
+	}
 	drawQueue->enqueue((Point){x,y});
 }
