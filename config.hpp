@@ -32,6 +32,8 @@
 #define PIN_MOTOR_Y_STEP	PB1
 // The number of steps to travel 1 milimeter in y direction.
 #define MOTOR_Y_STEPS_MM	5
+// Draw Servo //
+#define PIN_DRAW_SERVO		PA8
 
 
 #endif /* CONFIG_H */

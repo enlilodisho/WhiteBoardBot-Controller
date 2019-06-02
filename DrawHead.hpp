@@ -1,6 +1,7 @@
 #ifndef DRAW_HEAD_H
 #define DRAW_HEAD_H
 
+#include <Servo.h>
 #include "Module.hpp"
 #include "MotorDriver.hpp"
 
@@ -8,9 +9,9 @@ class DrawHead: public Module {
 
 	public:
 		// Constructor
-		// TODO Include mechanism for pressing marker against board.
 		DrawHead(const struct MotorDriverPins & xMotorPins,
-				const struct MotorDriverPins & yMotorPins);
+				const struct MotorDriverPins & yMotorPins,
+				Servo * drawServo);
 		// Destructor
 		~DrawHead();
 
@@ -25,6 +26,9 @@ class DrawHead: public Module {
 				Module* callbackModule, void(*callback)(Module*));
 		bool isMoving();
 
+		void startDrawing();
+		void stopDrawing();
+
 	protected:
 		MotorDriver * xMotor;
 		MotorDriver * yMotor;
@@ -38,6 +42,10 @@ class DrawHead: public Module {
 		unsigned int moveStatus;
 		std::pair<Module*, void(*)(Module*)> moveCallback;
 		static void updateMoveStatus(Module * module);
+
+		Servo * drawServo;
+		const static unsigned int POS_SERVO_DRAWING;
+		const static unsigned int POS_SERVO_NOTDRAWING;
 
 };
 

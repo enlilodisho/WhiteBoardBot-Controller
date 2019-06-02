@@ -52,9 +52,11 @@ void DrawingManager::runTasks() {
 			if (nextPoint.x < 0 || nextPoint.y < 0) {
 				// Read signal.
 				if (nextPoint.x == -1) {
-					// TODO Begin drawing.
+					// Begin drawing.
+					drawHead.startDrawing();
 				} else {
-					// TODO Stop drawing.
+					// Stop drawing.
+					drawHead.stopDrawing();
 				}
 			} else {
 				// Move head to new point.

@@ -6,6 +6,7 @@
 // WARNING! DO NOT ADD ANY DELAYS IN THIS FILE.
 // DOING SO COULD BLOCK EXECUTION OR CAUSE MODULE FAILURES.
 
+#include <Servo.h>
 #include "Controller.hpp"
 #include "Protothreading.hpp"
 #include "config.hpp"
@@ -63,8 +64,11 @@ void setupWhiteboardBotModules() {
 	yMotorPins.step	= PIN_MOTOR_Y_STEP;
 	yMotorPins.dir		= PIN_MOTOR_Y_DIR;
 
+	Servo * drawServo = new Servo;
+	drawServo->attach(PIN_DRAW_SERVO);
+
 	// Create DrawHead on stack.
-	DrawHead* drawHead = new DrawHead(xMotorPins, yMotorPins);
+	DrawHead* drawHead = new DrawHead(xMotorPins, yMotorPins, drawServo);
 
 	// Create DrawingManager on stack.
 	DrawingManager* drawManager = new DrawingManager(*drawHead);

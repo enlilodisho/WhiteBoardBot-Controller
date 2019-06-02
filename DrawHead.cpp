@@ -8,11 +8,15 @@
 #include "config.hpp"
 #include "DrawHead.hpp"
 
+const unsigned int POS_SERVO_DRAWING = 0;
+const unsigned int POS_SERVO_NOTDRAWING = 45;
+
 /*
  * Constructor.
  */
 DrawHead::DrawHead(const MotorDriverPins & xMotorPins,
-		const MotorDriverPins & yMotorPins) {
+		const MotorDriverPins & yMotorPins, Servo * drawServo):
+	drawServo(drawServo) {
 	// Create Motor Driver module for each motor.
 	xMotor = new MotorDriver(xMotorPins.enable, xMotorPins.reset,
 			xMotorPins.sleep, xMotorPins.step, xMotorPins.dir);
@@ -37,6 +41,8 @@ bool DrawHead::initialize() {
 	// Initialize motor drivers. (powers on motors)
 	xMotor->initialize();
 	yMotor->initialize();
+	// Move marker servo to 90 degrees.
+	stopDrawing();
 	calibrate();
 	return true;
 }
@@ -160,6 +166,20 @@ bool DrawHead::isMoving() {
 		return true;
 	}
 	return false;
+}
+
+/*
+ * Push marker against board.
+ */
+void DrawHead::startDrawing() {
+	drawServo->write(0);
+}
+
+/*
+ * Release marker from board.
+ */
+void DrawHead::stopDrawing() {
+	drawServo->write(45);
 }
 
 /*
